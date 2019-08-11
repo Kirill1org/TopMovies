@@ -1,0 +1,9 @@
+<resources>
+    <dimen name="film_avatar_height">178dp</dimen>
+    <dimen name="film_avatar_width">140dp</dimen>
+    <dimen name="film_rating_size">40dp</dimen>
+    <dimen name="film_avatar_margin">16dp</dimen>
+    <dimen name="film_title_size">14sp</dimen>
+    <dimen name="btn_text_size">12sp</dimen>
+
+</resources>
