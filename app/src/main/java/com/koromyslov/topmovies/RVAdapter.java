@@ -11,6 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.koromyslov.topmovies.ResponseDAO.Film;
 
 import java.util.List;
 
@@ -53,7 +54,7 @@ public class RVAdapter extends RecyclerView.Adapter<RVAdapter.FilmViewHolder> {
     class FilmViewHolder extends RecyclerView.ViewHolder {
 
         private ImageView filmAvatar;
-        private ImageView filmRating;
+        private TextView filmRating;
         private TextView filmTitle;
         private TextView filmDate;
         private TextView filmDescription;
@@ -69,7 +70,7 @@ public class RVAdapter extends RecyclerView.Adapter<RVAdapter.FilmViewHolder> {
 
             filmAvatar = itemView.findViewById(R.id.film_avatar);
             filmRating = itemView.findViewById(R.id.film_rating_img);
-            filmTitle = itemView.findViewById(R.id.filmTitleID);
+            filmTitle = itemView.findViewById(R.id.filmTitle);
             filmDate = itemView.findViewById(R.id.filmDate);
             filmDescription = itemView.findViewById(R.id.filmDescription);
 
@@ -79,12 +80,9 @@ public class RVAdapter extends RecyclerView.Adapter<RVAdapter.FilmViewHolder> {
         public void bind(Film film) {
             Glide
                     .with(context)
-                    .load(film.getFilmAvatar())
+                    .load("https://image.tmdb.org/t/p/w500"+film.getFilmAvatar())
                     .into(filmAvatar);
-            Glide.with(context)
-                    .load(film.getFilmRating())
-                    .into(filmRating);
-
+            filmRating.setText(film.getFilmRating());
             filmTitle.setText(film.getFilmTitle());
             filmDate.setText(film.getFilmDate());
             filmDescription.setText(film.getFilmDescritpion());

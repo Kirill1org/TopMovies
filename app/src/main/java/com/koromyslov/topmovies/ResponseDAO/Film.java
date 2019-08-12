@@ -1,4 +1,4 @@
-package com.koromyslov.topmovies;
+package com.koromyslov.topmovies.ResponseDAO;
 
 public class Film {
     private String filmAvatar;
