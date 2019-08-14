@@ -4,6 +4,7 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -58,21 +59,25 @@ public class RVAdapter extends RecyclerView.Adapter<RVAdapter.FilmViewHolder> {
         private TextView filmTitle;
         private TextView filmDate;
         private TextView filmDescription;
+        private Button filmDateBtn;
 
         public FilmViewHolder(@NonNull View itemView, @NonNull OnItemClickListener listener) {
             super(itemView);
-            itemView.setOnClickListener(view -> {
-                int position = getAdapterPosition();
-                if (listener != null && position != RecyclerView.NO_POSITION) {
-                    listener.onItemClick(filmList.get(position));
-                }
-            });
 
             filmAvatar = itemView.findViewById(R.id.film_avatar);
             filmRating = itemView.findViewById(R.id.film_rating_img);
             filmTitle = itemView.findViewById(R.id.filmTitle);
             filmDate = itemView.findViewById(R.id.filmDate);
             filmDescription = itemView.findViewById(R.id.filmDescription);
+            filmDateBtn = itemView.findViewById(R.id.filmDateBtn);
+
+            filmDateBtn.setOnClickListener(view -> {
+                int position = getAdapterPosition();
+                if (listener != null && position != RecyclerView.NO_POSITION) {
+                    listener.onItemClick(filmList.get(position));
+                }
+            });
+
 
         }
 
@@ -80,7 +85,7 @@ public class RVAdapter extends RecyclerView.Adapter<RVAdapter.FilmViewHolder> {
         public void bind(Film film) {
             Glide
                     .with(context)
-                    .load("https://image.tmdb.org/t/p/w500"+film.getFilmAvatar())
+                    .load("https://image.tmdb.org/t/p/w500" + film.getFilmAvatar())
                     .into(filmAvatar);
             filmRating.setText(film.getFilmRating());
             filmTitle.setText(film.getFilmTitle());

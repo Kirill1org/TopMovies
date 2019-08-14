@@ -32,6 +32,7 @@
             android:layout_marginStart="16dp"
             android:layout_marginTop="16dp"
             android:textStyle="bold"
+            android:textSize="@dimen/rating_film_size"
             app:layout_constraintStart_toEndOf="@+id/film_avatar"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -66,14 +67,14 @@
             android:layout_marginTop="8dp"
             android:layout_marginEnd="16dp"
             android:layout_marginBottom="8dp"
-            app:layout_constraintBottom_toTopOf="@+id/btn"
+            app:layout_constraintBottom_toTopOf="@+id/filmDateBtn"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/film_avatar"
             app:layout_constraintTop_toBottomOf="@+id/filmDate"
             tools:text="@string/film_descrition_mute" />
 
         <Button
-            android:id="@+id/btn"
+            android:id="@+id/filmDateBtn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="81dp"
