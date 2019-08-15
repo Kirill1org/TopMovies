@@ -1,11 +1,9 @@
 package com.koromyslov.topmovies.View;
 
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.AlarmManager;
-import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -22,9 +20,12 @@ import android.widget.ProgressBar;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+
+import com.arellomobile.mvp.MvpAppCompatActivity;
+import com.arellomobile.mvp.presenter.InjectPresenter;
 import com.koromyslov.topmovies.AlertReceiver;
+import com.koromyslov.topmovies.IFilmView;
 import com.koromyslov.topmovies.Presenter.FilmPresenter;
-import com.koromyslov.topmovies.Presenter.IFilmPresenter;
 import com.koromyslov.topmovies.R;
 import com.koromyslov.topmovies.RVAdapter;
 import com.koromyslov.topmovies.ResponseDAO.Film;
@@ -32,19 +33,22 @@ import com.koromyslov.topmovies.ResponseDAO.Film;
 import java.util.Calendar;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements IFilmView, TimePickerDialog.OnTimeSetListener {
+public class MainActivity extends MvpAppCompatActivity implements IFilmView, TimePickerDialog.OnTimeSetListener {
 
+    @InjectPresenter
+    FilmPresenter mFilmPresenter;
+
+    private DatePickerDialog datePickerDialog;
+    private TimePickerDialog timePickerDialog;
     private RecyclerView rv;
     private ProgressBar progressBar;
-    private IFilmPresenter filmPresenter;
-    private  AlarmManager alarmManager;
+    private AlarmManager alarmManager;
 
-    public String CHANNEL_ID;
 
 
     private final RVAdapter.OnItemClickListener clickListener = filmUnit -> {
 
-        dateSet(filmUnit.getFilmTitle(), filmUnit.getFilmID());
+        mFilmPresenter.getFilmDataNotify(filmUnit.getFilmTitle(), filmUnit.getFilmID());
 
     };
 
@@ -53,18 +57,18 @@ public class MainActivity extends AppCompatActivity implements IFilmView, TimePi
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        //createNotificationChannel();
-
-
-        filmPresenter = new FilmPresenter(this);
-
         rv = findViewById(R.id.rv);
         progressBar = findViewById(R.id.progressBar);
 
-        filmPresenter.getFilmData();
 
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+       if (datePickerDialog!=null) datePickerDialog.dismiss();
+       if (timePickerDialog!=null)timePickerDialog.dismiss();
+    }
 
     @Override
     public void showFilmList(List<Film> filmList) {
@@ -104,7 +108,7 @@ public class MainActivity extends AppCompatActivity implements IFilmView, TimePi
         alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
         Intent intent = new Intent(this, AlertReceiver.class);
         intent.putExtra("filmTitle", filmTitle);
-        intent.putExtra("filmID",ID_NOTIFY);
+        intent.putExtra("filmID", ID_NOTIFY);
         PendingIntent pendingIntent = PendingIntent.getBroadcast(this, ID_NOTIFY, intent, 0);
 
         alarmManager.setExact(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
@@ -113,12 +117,7 @@ public class MainActivity extends AppCompatActivity implements IFilmView, TimePi
     }
 
     @Override
-    public void onTimeSet(TimePicker timePicker, int hourOfDay, int minute) {
-        Toast.makeText(this, hourOfDay + ":" + minute, Toast.LENGTH_SHORT).show();
-
-    }
-
-    private void dateSet(String filmTitle, int filmID) {
+    public void dataSet(String filmTitle, int filmID) {
 
         Calendar calendar = Calendar.getInstance();
 
@@ -127,35 +126,29 @@ public class MainActivity extends AppCompatActivity implements IFilmView, TimePi
         int CURRENT_DATE = calendar.get(Calendar.DATE);
         int CURRENT_HOUR_OF_DAY = calendar.get(Calendar.HOUR_OF_DAY);
         int CURRENT_MINUTE = calendar.get(Calendar.MINUTE);
-        TimePickerDialog timePickerDialog = new TimePickerDialog(MainActivity.this, new TimePickerDialog.OnTimeSetListener() {
+        timePickerDialog = new TimePickerDialog(MainActivity.this, new TimePickerDialog.OnTimeSetListener() {
             @Override
             public void onTimeSet(TimePicker timePicker, int hour, int minute) {
 
-                filmPresenter.setFilmTime(hour, minute, filmTitle, filmID);
+                mFilmPresenter.setFilmTime(hour, minute, filmTitle, filmID);
             }
         }, CURRENT_HOUR_OF_DAY, CURRENT_MINUTE, android.text.format.DateFormat.is24HourFormat(getApplicationContext()));
 
-        DatePickerDialog datePickerDialog = new DatePickerDialog(MainActivity.this, new DatePickerDialog.OnDateSetListener() {
+       datePickerDialog = new DatePickerDialog(MainActivity.this, new DatePickerDialog.OnDateSetListener() {
             @Override
             public void onDateSet(DatePicker datePicker, int year, int month, int date) {
-                filmPresenter.setFilmDate(year, month, date);
+                mFilmPresenter.setFilmDate(year, month, date);
                 timePickerDialog.show();
             }
         }, CURRENT_YEAR, CURRENT_MONTH, CURRENT_DATE);
         datePickerDialog.show();
     }
 
-    private void createNotificationChannel() {
+    @Override
+    public void onTimeSet(TimePicker timePicker, int hourOfDay, int minute) {
+        Toast.makeText(this, hourOfDay + ":" + minute, Toast.LENGTH_SHORT).show();
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            CharSequence name = getString(R.string.channel_name);
-            String description = getString(R.string.channel_description);
-            int importance = NotificationManager.IMPORTANCE_DEFAULT;
-            NotificationChannel channel = new NotificationChannel(CHANNEL_ID, name, importance);
-            channel.setDescription(description);
-
-            NotificationManager notificationManager = getSystemService(NotificationManager.class);
-            notificationManager.createNotificationChannel(channel);
-        }
     }
+
+
 }
