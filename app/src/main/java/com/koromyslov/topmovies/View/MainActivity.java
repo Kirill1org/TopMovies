@@ -5,13 +5,10 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.AlarmManager;
 import android.app.DatePickerDialog;
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -23,11 +20,10 @@ import android.widget.Toast;
 
 import com.arellomobile.mvp.MvpAppCompatActivity;
 import com.arellomobile.mvp.presenter.InjectPresenter;
-import com.koromyslov.topmovies.AlertReceiver;
+import com.koromyslov.topmovies.Notification.AlertReceiver;
 import com.koromyslov.topmovies.IFilmView;
 import com.koromyslov.topmovies.Presenter.FilmPresenter;
 import com.koromyslov.topmovies.R;
-import com.koromyslov.topmovies.RVAdapter;
 import com.koromyslov.topmovies.ResponseDAO.Film;
 
 import java.util.Calendar;
@@ -43,7 +39,6 @@ public class MainActivity extends MvpAppCompatActivity implements IFilmView, Tim
     private RecyclerView rv;
     private ProgressBar progressBar;
     private AlarmManager alarmManager;
-
 
 
     private final RVAdapter.OnItemClickListener clickListener = filmUnit -> {
@@ -66,8 +61,8 @@ public class MainActivity extends MvpAppCompatActivity implements IFilmView, Tim
     @Override
     protected void onDestroy() {
         super.onDestroy();
-       if (datePickerDialog!=null) datePickerDialog.dismiss();
-       if (timePickerDialog!=null)timePickerDialog.dismiss();
+        if (datePickerDialog != null) datePickerDialog.dismiss();
+        if (timePickerDialog != null) timePickerDialog.dismiss();
     }
 
     @Override
@@ -79,7 +74,7 @@ public class MainActivity extends MvpAppCompatActivity implements IFilmView, Tim
 
     @Override
     public void showErrorCode(Throwable t) {
-        Toast.makeText(this, t.getMessage(), Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, t.getMessage(), Toast.LENGTH_LONG).show();
 
     }
 
@@ -98,12 +93,10 @@ public class MainActivity extends MvpAppCompatActivity implements IFilmView, Tim
     @Override
     public void createNotify(int ID_NOTIFY, String filmTitle, int year, int month, int date, int hour, int minute) {
 
-
         Calendar calendar = Calendar.getInstance();
         calendar.set(year, month, date, hour, minute);
         Log.e("filmTitle ", filmTitle);
         Log.e("filmID ", Integer.toString(ID_NOTIFY));
-
 
         alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
         Intent intent = new Intent(this, AlertReceiver.class);
@@ -112,7 +105,6 @@ public class MainActivity extends MvpAppCompatActivity implements IFilmView, Tim
         PendingIntent pendingIntent = PendingIntent.getBroadcast(this, ID_NOTIFY, intent, 0);
 
         alarmManager.setExact(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
-
 
     }
 
@@ -134,7 +126,7 @@ public class MainActivity extends MvpAppCompatActivity implements IFilmView, Tim
             }
         }, CURRENT_HOUR_OF_DAY, CURRENT_MINUTE, android.text.format.DateFormat.is24HourFormat(getApplicationContext()));
 
-       datePickerDialog = new DatePickerDialog(MainActivity.this, new DatePickerDialog.OnDateSetListener() {
+        datePickerDialog = new DatePickerDialog(MainActivity.this, new DatePickerDialog.OnDateSetListener() {
             @Override
             public void onDateSet(DatePicker datePicker, int year, int month, int date) {
                 mFilmPresenter.setFilmDate(year, month, date);

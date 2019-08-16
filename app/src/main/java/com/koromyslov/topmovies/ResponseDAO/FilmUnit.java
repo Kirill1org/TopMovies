@@ -158,8 +158,9 @@ public class FilmUnit {
     }
 
     public String getReleaseYear() {
-        String[] parseDateString=releaseDate.split("-");
-        return parseDateString[0];}
+        String[] parseDateString = releaseDate.split("-");
+        return parseDateString[0];
+    }
 
     public void setReleaseDate(String releaseDate) {
         this.releaseDate = releaseDate;

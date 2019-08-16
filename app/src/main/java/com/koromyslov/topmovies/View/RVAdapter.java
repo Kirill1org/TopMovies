@@ -1,4 +1,4 @@
-package com.koromyslov.topmovies;
+package com.koromyslov.topmovies.View;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -12,6 +12,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.koromyslov.topmovies.R;
 import com.koromyslov.topmovies.ResponseDAO.Film;
 
 import java.util.List;

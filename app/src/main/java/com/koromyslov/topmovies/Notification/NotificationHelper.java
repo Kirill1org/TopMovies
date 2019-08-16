@@ -1,4 +1,4 @@
-package com.koromyslov.topmovies;
+package com.koromyslov.topmovies.Notification;
 
 import android.annotation.TargetApi;
 import android.app.Notification;
@@ -9,6 +9,8 @@ import android.content.ContextWrapper;
 import android.os.Build;
 
 import androidx.core.app.NotificationCompat;
+
+import com.koromyslov.topmovies.R;
 
 public class NotificationHelper extends ContextWrapper {
 
@@ -35,14 +37,15 @@ public class NotificationHelper extends ContextWrapper {
         getManager().createNotificationChannel(channel);
     }
 
-    public NotificationManager getManager(){
-        if (mManager==null){
-            mManager= (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE) ;
+    public NotificationManager getManager() {
+        if (mManager == null) {
+            mManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
         }
         return mManager;
     }
-    public NotificationCompat.Builder getChannelNotification(String title, String message){
+
+    public NotificationCompat.Builder getChannelNotification(String title, String message) {
         return new NotificationCompat.Builder(getApplicationContext(), CHANNEL_ID)
                 .setContentTitle(title)
                 .setSmallIcon(R.drawable.ic_launcher_foreground)

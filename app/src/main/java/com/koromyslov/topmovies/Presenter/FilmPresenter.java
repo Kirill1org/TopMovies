@@ -7,7 +7,6 @@ import com.arellomobile.mvp.MvpPresenter;
 import com.koromyslov.topmovies.Model.FilmService;
 import com.koromyslov.topmovies.Model.NetworkModule;
 import com.koromyslov.topmovies.ResponseDAO.Film;
-import com.koromyslov.topmovies.ResponseDAO.FilmList;
 import com.koromyslov.topmovies.ResponseDAO.FilmUnit;
 import com.koromyslov.topmovies.IFilmView;
 
@@ -19,13 +18,10 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 
 @InjectViewState
-public class FilmPresenter extends MvpPresenter<IFilmView> implements IFilmPresenter{
-
-
+public class FilmPresenter extends MvpPresenter<IFilmView> implements IFilmPresenter {
 
     private static final String API_KEY = "ee40188e0992e8a36ad413d1346b6208";
 
-    //private IFilmView filmView;
     private List<Film> filmResultList = new ArrayList<>();
 
     private int CHOSEN_YEAR = 0;
@@ -36,45 +32,44 @@ public class FilmPresenter extends MvpPresenter<IFilmView> implements IFilmPrese
 
     public FilmPresenter() {
         getFilmData();
-        Log.e("stage","Create presenter");
+
     }
 
 
     @Override
     public void getFilmData() {
-        Log.e("stage","Get data");
+        getViewState().showProgressBar();
         FilmService api = new NetworkModule().filmService;
         api.getFilmList(API_KEY)
-                .doOnSubscribe(f->getViewState().showProgressBar())
+                .doOnSubscribe(f -> getViewState().showProgressBar())
                 .subscribeOn(Schedulers.io())
                 .observeOn(Schedulers.computation())
                 .flatMap(filmList -> Observable.fromIterable(filmList.getResults()))
                 .filter(filmUnit -> filmUnit.getReleaseYear().equals("2019"))
                 .toList()
                 .observeOn(AndroidSchedulers.mainThread())
-                .doAfterTerminate(()->getViewState().hideProgressBar())
-                //.doOnSuccess(f->getViewState().hideProgressBar())
-                .subscribe(this::addToListFilm, Throwable -> Log.e("HELLO", Throwable.getMessage()));
+                .doAfterTerminate(() -> getViewState().hideProgressBar())
+                .subscribe(this::addToListFilm, Throwable -> getViewState().showErrorCode(Throwable));
     }
 
     @Override
     public void setFilmDate(int year, int month, int date) {
-        CHOSEN_YEAR=year;
-        CHOSEN_MONTH=month;
-        CHOSEN_DATE=date;
+        CHOSEN_YEAR = year;
+        CHOSEN_MONTH = month;
+        CHOSEN_DATE = date;
     }
 
     @Override
     public void setFilmTime(int hour, int minute, String filmTitle, int filmID) {
-        CHOSEN_HOUR=hour;
-        CHOSEN_MINUTE=minute;
-        getViewState().createNotify(filmID,filmTitle, CHOSEN_YEAR, CHOSEN_MONTH, CHOSEN_DATE, CHOSEN_HOUR, CHOSEN_MINUTE);
+        CHOSEN_HOUR = hour;
+        CHOSEN_MINUTE = minute;
+        getViewState().createNotify(filmID, filmTitle, CHOSEN_YEAR, CHOSEN_MONTH, CHOSEN_DATE, CHOSEN_HOUR, CHOSEN_MINUTE);
 
     }
 
     @Override
     public void getFilmDataNotify(String filmTitle, int filmID) {
-    getViewState().dataSet(filmTitle, filmID);
+        getViewState().dataSet(filmTitle, filmID);
     }
 
     private void addToListFilm(List<FilmUnit> filmUnits) {
@@ -82,28 +77,6 @@ public class FilmPresenter extends MvpPresenter<IFilmView> implements IFilmPrese
             filmResultList.add(new Film(filmUnit.getPosterPath(), filmUnit.getTitle(), filmUnit.getVoteAverage().toString(), filmUnit.getReleaseDate(), filmUnit.getOverview(), filmUnit.getId()));
         }
         getViewState().showFilmList(filmResultList);
-    }
-
-    private FilmList getFilm2019(FilmList filmList) {
-
-        FilmList newFilmList = new FilmList();
-
-        for (FilmUnit filmUnit : filmList.getResults()) {
-            String[] parseDateString = filmUnit.getReleaseDate().split("-");
-            if (parseDateString[0] == "2019") newFilmList.getResults().add(filmUnit);
-        }
-        return newFilmList;
-
-    }
-
-    private boolean isFilm2019(FilmList filmList) {
-        boolean isFilm2019 = false;
-        for (FilmUnit filmUnit : filmList.getResults()) {
-            String[] parseDateString = filmUnit.getReleaseDate().split("-");
-            if (parseDateString[0].equals("2019")) isFilm2019 = true;
-
-        }
-        return isFilm2019;
     }
 }
 

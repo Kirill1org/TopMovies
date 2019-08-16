@@ -8,7 +8,7 @@ public class Film {
     private String filmDescritpion;
     private int filmID;
 
-    public Film(String filmAvatar, String filmTitle, String filmRating, String filmDate, String filmDescritpion,int filmID) {
+    public Film(String filmAvatar, String filmTitle, String filmRating, String filmDate, String filmDescritpion, int filmID) {
         this.filmAvatar = filmAvatar;
         this.filmTitle = filmTitle;
         this.filmRating = filmRating;

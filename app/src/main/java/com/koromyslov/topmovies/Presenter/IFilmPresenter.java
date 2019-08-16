@@ -9,9 +9,7 @@ public interface IFilmPresenter {
 
     void setFilmTime(int hour, int minute, String filmTitle, int filmID);
 
-    void getFilmDataNotify(String filmTitle, int filmID );
-
-
+    void getFilmDataNotify(String filmTitle, int filmID);
 
 
 }
