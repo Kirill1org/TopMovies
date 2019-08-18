@@ -20,8 +20,8 @@ import android.widget.Toast;
 
 import com.arellomobile.mvp.MvpAppCompatActivity;
 import com.arellomobile.mvp.presenter.InjectPresenter;
-import com.koromyslov.topmovies.Notification.AlertReceiver;
 import com.koromyslov.topmovies.IFilmView;
+import com.koromyslov.topmovies.Notification.AlertReceiver;
 import com.koromyslov.topmovies.Presenter.FilmPresenter;
 import com.koromyslov.topmovies.R;
 import com.koromyslov.topmovies.ResponseDAO.Film;
@@ -43,7 +43,7 @@ public class MainActivity extends MvpAppCompatActivity implements IFilmView, Tim
 
     private final RVAdapter.OnItemClickListener clickListener = filmUnit -> {
 
-        mFilmPresenter.getFilmDataNotify(filmUnit.getFilmTitle(), filmUnit.getFilmID());
+        mFilmPresenter.onBtnScheduleClick(filmUnit.getFilmTitle(), filmUnit.getFilmID());
 
     };
 
@@ -67,6 +67,7 @@ public class MainActivity extends MvpAppCompatActivity implements IFilmView, Tim
 
     @Override
     public void showFilmList(List<Film> filmList) {
+        progressBar.setVisibility(View.GONE);
         rv.setAdapter(new RVAdapter(this, filmList, clickListener));
         rv.setLayoutManager(new LinearLayoutManager(this));
     }
@@ -76,17 +77,6 @@ public class MainActivity extends MvpAppCompatActivity implements IFilmView, Tim
     public void showErrorCode(Throwable t) {
         Toast.makeText(this, t.getMessage(), Toast.LENGTH_LONG).show();
 
-    }
-
-    @Override
-    public void showProgressBar() {
-        progressBar.setVisibility(View.VISIBLE);
-
-    }
-
-    @Override
-    public void hideProgressBar() {
-        progressBar.setVisibility(View.INVISIBLE);
     }
 
 
@@ -109,7 +99,7 @@ public class MainActivity extends MvpAppCompatActivity implements IFilmView, Tim
     }
 
     @Override
-    public void dataSet(String filmTitle, int filmID) {
+    public void showCalendarDialog(String filmTitle, int filmID) {
 
         Calendar calendar = Calendar.getInstance();
 
@@ -118,6 +108,7 @@ public class MainActivity extends MvpAppCompatActivity implements IFilmView, Tim
         int CURRENT_DATE = calendar.get(Calendar.DATE);
         int CURRENT_HOUR_OF_DAY = calendar.get(Calendar.HOUR_OF_DAY);
         int CURRENT_MINUTE = calendar.get(Calendar.MINUTE);
+
         timePickerDialog = new TimePickerDialog(MainActivity.this, new TimePickerDialog.OnTimeSetListener() {
             @Override
             public void onTimeSet(TimePicker timePicker, int hour, int minute) {

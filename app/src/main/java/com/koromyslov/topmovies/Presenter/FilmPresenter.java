@@ -1,7 +1,5 @@
 package com.koromyslov.topmovies.Presenter;
 
-import android.util.Log;
-
 import com.arellomobile.mvp.InjectViewState;
 import com.arellomobile.mvp.MvpPresenter;
 import com.koromyslov.topmovies.Model.FilmService;
@@ -24,6 +22,7 @@ public class FilmPresenter extends MvpPresenter<IFilmView> implements IFilmPrese
 
     private List<Film> filmResultList = new ArrayList<>();
 
+
     private int CHOSEN_YEAR = 0;
     private int CHOSEN_MONTH = 0;
     private int CHOSEN_DATE = 0;
@@ -32,23 +31,21 @@ public class FilmPresenter extends MvpPresenter<IFilmView> implements IFilmPrese
 
     public FilmPresenter() {
         getFilmData();
-
     }
 
 
     @Override
     public void getFilmData() {
-        getViewState().showProgressBar();
+
         FilmService api = new NetworkModule().filmService;
+
         api.getFilmList(API_KEY)
-                .doOnSubscribe(f -> getViewState().showProgressBar())
                 .subscribeOn(Schedulers.io())
                 .observeOn(Schedulers.computation())
                 .flatMap(filmList -> Observable.fromIterable(filmList.getResults()))
                 .filter(filmUnit -> filmUnit.getReleaseYear().equals("2019"))
                 .toList()
                 .observeOn(AndroidSchedulers.mainThread())
-                .doAfterTerminate(() -> getViewState().hideProgressBar())
                 .subscribe(this::addToListFilm, Throwable -> getViewState().showErrorCode(Throwable));
     }
 
@@ -68,15 +65,16 @@ public class FilmPresenter extends MvpPresenter<IFilmView> implements IFilmPrese
     }
 
     @Override
-    public void getFilmDataNotify(String filmTitle, int filmID) {
-        getViewState().dataSet(filmTitle, filmID);
+    public void onBtnScheduleClick(String filmTitle, int filmID) {
+        getViewState().showCalendarDialog(filmTitle, filmID);
     }
 
-    private void addToListFilm(List<FilmUnit> filmUnits) {
+    public void addToListFilm(List<FilmUnit> filmUnits) {
         for (FilmUnit filmUnit : filmUnits) {
             filmResultList.add(new Film(filmUnit.getPosterPath(), filmUnit.getTitle(), filmUnit.getVoteAverage().toString(), filmUnit.getReleaseDate(), filmUnit.getOverview(), filmUnit.getId()));
         }
         getViewState().showFilmList(filmResultList);
     }
+
 }
 
